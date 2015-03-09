@@ -1,7 +1,7 @@
 {
-  "name": "mocha-report-viewer",
-  "description": "Cli for piping a xunit test directly into your browser",
-  "version": "0.0.1",
+  "name": "report-viewer",
+  "description": "Cli for piping a unit test result directly into your browser",
+  "version": "0.0.2",
   "homepage": "https://github.com/paulpflug/",
   "author": {
     "name": "Paul Pflugradt",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/paulpflug/mocha-report-viewer"
+    "url": "git://github.com/paulpflug/report-viewer"
   },
   "engines": {
     "node": "*"
   },
   "main": "lib/index.js",
   "bin": {
-    "livereport": "./index.js"
+    "report-viewer": "./index.js"
   },
   "dependencies": {
     "angular": "^1.3.14",
