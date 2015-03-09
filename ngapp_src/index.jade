@@ -1,0 +1,39 @@
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    meta(http-equiv="X-UA-Compatible",content="IE=edge")
+    meta(name="fragment",content="!")
+    title Reporter
+    link(rel='stylesheet', href='index.css')
+    
+  body.container(ng-app="reporterApp",ng-controller="appCtrl")
+    md-toolbar(ng-class="{'md-warn': failed.length>0, 'md-primary': failed.length == 0}")
+      .md-toolbar-tools
+        .md-toolbar-item
+          span.md-flex Tests: {{tests}}
+        .md-toolbar-item.md-tools(layout="column") 
+          span.md-flex(ng-show="failed.length>0") Errors: {{failed.length}}
+
+    md-content.md-padding
+      md-list
+        md-item(ng-repeat="item in failed")
+          md-item-content
+            .md-tile-left.red failed
+            .md-tile-content 
+              p {{item.levels.join(" ")}}
+              h4 {{item.title}}
+              p(ng-repeat="line in splitNewLine(item.failure)" ng-class="{'red':$index==1, 'ng-cloak':$first}") {{line}}
+            .md-tile-right {{item.duration}}
+    md-content.md-padding
+      md-list
+        md-item(ng-repeat="item in data")
+          md-item-content
+            .md-tile-left ok
+            .md-tile-content 
+              p {{item.levels.join(" ")}}
+              h4 {{item.title}}
+
+            .md-tile-right {{item.duration}}
+
+    script(src='bundle.js')
