@@ -1,108 +1,66 @@
 "use strict"
 
-express = require "express"
 http = require "http"
+url  = require "url"
 path = require "path"
-xmlparser = require("xml2json").toJson
-inspect = require('util').inspect;
+events = require "events"
 
+socketio = require "socket.io"
 module.exports = (args) ->
-  port = args.port or 9999
   currentData = []
-  buffer = ""
-  parsers = {
-    json: (chunk) ->
-      chunk = process.stdin.read()
-      if chunk != null
-        data = false
-        try
-          data = JSON.parse(chunk)    
-        if data
-          if data[0] == "start"
-            currentData = [data]
-          else 
-            currentData.push data
-          io.sockets.emit("singleData",data)
-        else
-          console.log chunk
-    xunit: (chunk) ->
-      parse = () ->
-        data = xmlparser(buffer,{object:true})
-        currentData = [["start",{"total":data.testsuite.tests}]]
-        for test in data.testsuite.testcase
-          item = {
-            title: test.name
-            fullTitle: test.classname + " "+ test.name
-            duration: test.time*1000
-          }
-          if test.failure
-            item.failure = test.failure
-            .replace(/&amp;lt;/g,"<")
-            .replace(/&amp;gt;/g,">")
-            .replace(/&amp;&amp;#35;40;/g,"(")
-            .replace(/&amp;&amp;#35;41;/g,")")
-            .replace(/&apos;/g,"'")
-            item = ["fail",item]
-          else
-            item = ["pass",item]
-          currentData.push(item)
-        currentData.push(["end",{
-          tests: data.testsuite.tests
-          failures: data.testsuite.failures            
-          duration: data.testsuite.time*1000
-          }])
-        io.sockets.emit "data", currentData
-      chunk = process.stdin.read()
-      if chunk != null
-        match = false
-        if /^<testsuite/.test(chunk)
-          buffer = chunk
-        else if /^<testcase/.test(chunk)
-          buffer += chunk
-          if /<\/testsuite>/.test(chunk)
-            parse()
-        else if /^<\/testsuite>/.test(chunk)
-          buffer += chunk
-          parse()
-        else
-          console.log chunk
-  }
-  reporter = args.reporter or "xunit"
-  if parsers[reporter]
-    parser = parsers[reporter]
-  else
-    parser = parsers.xunit
-  app = express()
-  app.set "port", port
-  if process.env.dirname
-    dir = process.env.dirname
-  else
-    dir = path.join(__dirname,"..")
-  appdir = path.join(dir, "ngapp")
-  ## setting static routes
-  app.use express.static(appdir)
-  app.use "/vendor", express.static(path.join(dir, "vendor"))
-  server = app.listen app.get("port"), ->
-    console.log "Express server listening on port %d in %s mode", app.get("port"), app.get("env")
-  io = require("socket.io")(server)
-  process.stdin.setEncoding('utf8')
-  
-  process.stdin.on 'readable', parser
-    
+  # args processing
+  port = args.port or 9999
+  parser = args.parser
+  throw new Error "no viewer given" if not args.viewer
+  throw new Error "no files to serve" if not args.viewer.files 
+  site = args.viewer
+
+  # http server
+  server = http.createServer (request,response) ->
+    filename = url.parse(request.url).pathname.slice(1) or "index.html"
+    if site.files[filename]
+      extension = path.extname(filename).slice 1
+      extension = "javascript" if extension == "js"
+      response.writeHead(200,{"Content-type":"text/"+extension})
+      response.write(site.files[filename], "utf8")
+    else
+      response.writeHead(404,{"Content-type":"text/plain"})
+      response.write("404", "utf8")
+    response.end()
+
+  # io server
+  io = socketio(server)
   io.on "connection", (socket) -> 
-    console.log "socket.io client connected"
     socket.on "data", () ->
       socket.emit "data", currentData
-    socket.on "livereload", () ->
-      console.log "sending "+ args.livereload
-      socket.emit "livereload", args.livereload
+  if site.action
+    site.action.on "reload", () ->
+      io.sockets.emit "reload"
+
+  # stdin processing
+  process.stdin.setEncoding("utf8")
+  actions = parser(process.stdin)    
+  actions.on "data", (data) ->
+    io.sockets.emit "data", data
+    currentData = data
+  actions.on "dataChunk", (dataChunk) ->
+    io.sockets.emit "dataChunk", dataChunk
+    if dataChunk[0] == "start"
+      currentData = [dataChunk]
+    else 
+      currentData.push dataChunk
+  actions.on "dataConsole", (dataConsole) ->
+    io.sockets.emit "dataConsole", dataConsole  
+
+
   process.stdin.on 'end', -> server.close()
+
+  # starting server
+  console.log "serving on port "+port
+  server.listen(port)
+  # args execution
   if args.open
     opener = require "opener"
     opener("http://localhost:"+port)
-  if args.livereload
-    lrserver = require "live-reload"
-    lrserver({
-      port: args.livereload,
-      _: [appdir],
-      })
+  else
+    io.sockets.emit "reload"

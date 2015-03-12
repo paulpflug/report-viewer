@@ -1,7 +1,7 @@
 {
   "name": "report-viewer",
   "description": "Cli for piping a unit test result directly into your browser",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "homepage": "https://github.com/paulpflug/",
   "author": {
     "name": "Paul Pflugradt",
@@ -19,28 +19,16 @@
     "report-viewer": "./index.js"
   },
   "dependencies": {
-    "angular": "^1.3.14",
-    "angular-material": "^0.8.3",
     "commander": "~2.6.0",
-    "express": "^4.11.1",
-    "opener": "^1.4.0",
     "socket.io": "~1.3.2",
-    "socket.io-client": "^1.3.5",
-    "xml2json": "^0.6.1"
+    "xml2json": "^0.6.1",
+    "report-viewer-default": "^0.0.1"
   },
   "devDependencies": {
-    "browserify": "^9.0.3",
-    "browserify-css": "^0.4.0",
-    "browserify-ngannotate": "^0.7.1",
     "coffee-script": "^1.7.1",
-    "jade": "^1.7.0",
-    "live-reload": "^1.1.0",
-    "minifyify": "^6.3.2",
     "nodemon": "^1.3.7",
     "parallelshell": "^1.1.0",
-    "rimraf": "^2.3.1",
-    "stylus": "^0.49.3",
-    "watchify": "^2.4.0"
+    "rimraf": "^2.3.1"
   },
   "keywords": [
     "socket.io",
@@ -54,21 +42,9 @@
   ],
   "readmeFilename": "README.md",
   "scripts": {
-    "clean:server": "rimraf lib/ && mkdir lib",
-    "prebuild:server": "npm run clean:server",
-    "build:server": "coffee --compile --output lib/ src/*.coffee",
-    "clean:client": "rimraf ngapp/ && mkdir ngapp",
-    "prebuild:client": "npm run clean:client",
-    "build:client:script": "coffee --bare --output ngapp/ --compile ngapp_src/index.coffee && browserify ngapp/index.js -d -t browserify-ngannotate -t browserify-css -p [minifyify --compressPath . --map index.js.map --output ngapp/index.js.map] -o ngapp/bundle.js",
-    "build:client:styles": "stylus ngapp_src/*.styl -m -o ngapp/",
-    "build:client:markup": "jade ngapp_src/*.jade -o ngapp/",
-    "build:client": "npm run build:client:styles && npm run build:client:markup && npm run build:client:script",
-    "build": "npm run build:client && npm run build:server",
-    "watch": "parallelshell \"npm run watch:server -s\" \"npm run watch:client:styles -s\" \"npm run watch:client:markup -s\" \"npm run watch:client:coffee -s\" \"npm run watch:client:watchify -s\"",
-    "watch:server": "nodemon -q -w src/ --ext 'coffee' --exec 'npm run build:server'",
-    "watch:client:coffee": "nodemon -q -w ngapp_src/ --ext 'coffee' --exec 'coffee --bare --output ngapp/ --compile ngapp_src/index.coffee'",
-    "watch:client:watchify": "watchify ngapp/index.js -d -t browserify-ngannotate -t browserify-css -p [minifyify --compressPath . --map index.js.map --output ngapp/index.js.map] -o ngapp/bundle.js",
-    "watch:client:styles": "nodemon -q -w ngapp_src/ --ext 'styl' --exec 'npm run build:client:styles'",
-    "watch:client:markup": "nodemon -q -w ngapp_src/ --ext 'jade' --exec 'npm run build:client:markup'"
+    "clean": "rimraf lib/ && mkdir lib",
+    "prebuild": "npm run clean",
+    "build": "coffee --compile --output lib/ src/*.coffee",
+    "watch": "nodemon -q -w src/ --ext 'coffee' --exec 'npm run build'"
   }
 }
