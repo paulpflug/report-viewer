@@ -1,7 +1,7 @@
 {
   "name": "report-viewer",
   "description": "Cli for piping a unit test result directly into your browser",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/paulpflug/",
   "author": {
     "name": "Paul Pflugradt",
@@ -22,7 +22,8 @@
     "commander": "~2.6.0",
     "socket.io": "~1.3.2",
     "xml2json": "^0.6.1",
-    "report-viewer-default": "^0.0.1"
+    "report-viewer-default": "*",
+    "opener":"~1.4.0"
   },
   "devDependencies": {
     "coffee-script": "^1.7.1",

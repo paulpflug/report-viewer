@@ -47,11 +47,16 @@ mocha --reporter xunit --watch | report-viewer --viewer /path/to/your-view
 If you publish your work, let me know, I will link it up
 
 ## Release History
+ - *v0.1.1*: modified dependencies
  - *v0.1.0*: 
    Moved the view into seperate bundle [report-viewer-default](https://github.com/paulpflug/report-viewer-default)
+
    Largely improved the view
+
    Console output is piped into the console of the browser
-   cut on dependencies
+
+   Cut on dependencies
+
  - *v0.0.2*: Rename to report-viewer
  - *v0.0.1*: First Release
 
