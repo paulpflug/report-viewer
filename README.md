@@ -1,3 +1,4 @@
+![](https://raw.githubusercontent.com/paulpflug/report-viewer/gh-pages/report-viewer.png)
 # report-viewer
 
 A cli for piping a unit test result directly into your browser.
