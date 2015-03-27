@@ -35,7 +35,7 @@ if (program.parser) {
     parser = require(program.parser);
   }
 } else {
-  parser = parsers.xunit
+  parser = parsers.spec
 }
 program.parser = parser
 

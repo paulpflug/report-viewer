@@ -1,7 +1,7 @@
 # report-viewer
 
 A cli for piping a unit test result directly into your browser.
-Currently only works with mocha and the xunit reporter.
+Currently only works with mocha and the spec reporter.
 
 Each time a test result is piped into stdio, the browser view will be updated.
 Uses [socket.io](http://socket.io/) for best experience.
@@ -9,7 +9,7 @@ Uses [socket.io](http://socket.io/) for best experience.
 No livereload needed.
 Errors will be shown prominently on top.
 
-The console output will be visible in the console of the browser.
+The console output will be visible in the side of the browser
 
 ## Install
 
@@ -21,7 +21,7 @@ npm install report-viewer
 ## Usage
 Best used with mocha:
 ```sh
-mocha --reporter xunit --watch | report-viewer --opener
+mocha --watch 2>&1 | report-viewer --opener
 ```
 This will start a webserver (localhost:9999) to view current testresults.
 
@@ -40,13 +40,23 @@ Available options:
 You can use your own view by cloning the [report-viewer-default](https://github.com/paulpflug/report-viewer-default) repository, rename and change it.
 both should work:
 ```sh
-mocha --reporter xunit --watch | report-viewer --viewer your-view
-mocha --reporter xunit --watch | report-viewer --viewer /path/to/your-view
+mocha --watch 2>&1 | report-viewer --viewer your-view
+mocha --watch 2>&1 | report-viewer --viewer /path/to/your-view
 ```
 
 If you publish your work, let me know, I will link it up
 
+## Testing
+
+See the [report-viewer-tester](https://github.com/paulpflug/report-viewer-tester) repository
+
 ## Release History
+ - *v0.2.0*: 
+    reworked the view
+
+    using spec reporter now
+
+    works with debug and console output directly into the browser window
  - *v0.1.1*: modified dependencies
  - *v0.1.0*: 
    Moved the view into seperate bundle [report-viewer-default](https://github.com/paulpflug/report-viewer-default)
