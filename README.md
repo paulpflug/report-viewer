@@ -24,7 +24,12 @@ Best used with mocha:
 ```sh
 mocha --watch 2>&1 | report-viewer --opener
 ```
-This will start a webserver (localhost:9999) to view current testresults.
+or
+```sh
+report-viewer --opener 'mocha --watch'
+```
+Both will start a webserver (localhost:9999) to view current testresults.
+The later one will be able to restart mocha through the webview.
 
 Available options:
 ```
@@ -32,7 +37,6 @@ Available options:
 -V, --version             output the version number
 --port <n>                port
 --opener                  opens a browser
---parser <(module-)name>  loades a specific parser
 --viewer <(module-)name>  loades a specific viewer
 ```
 
@@ -52,6 +56,10 @@ If you publish your work, let me know, I will link it up
 See the [report-viewer-tester](https://github.com/paulpflug/report-viewer-tester) repository
 
 ## Release History
+ - *v0.3.0*:
+    moved the parser into the view
+
+    is now able to spawn mocha on its own, allows restarts
  - *v0.2.0*: 
     reworked the view
 
