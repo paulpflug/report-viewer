@@ -19,7 +19,9 @@ if (program.viewer) {
   if (abs) program.viewer = path.resolve(program.viewer);
   viewer = require(program.viewer);
 } else {
-  viewer = require("report-viewer-default")
+  viewer = require("report-viewer-default")({
+    port: program.port || 9999
+  })
 }
 program.viewer = viewer
 
