@@ -39,7 +39,19 @@ Available options:
 --opener                  opens a browser
 --viewer <(module-)name>  loades a specific viewer
 ```
+#### From node
 
+```coffee
+runner = require("report-viewer")
+mocha = require.resolve("mocha")+"/bin/mocha"
+path = require("path")
+specs = path.resolve(__dirname, './test')
+
+runner({
+  port: process.env.PORT, # Heroku uses dynamic port assignment
+  args: mocha + ' ' + specs
+})
+```
 ## Views
 
 You can use your own view by cloning the [report-viewer-default](https://github.com/paulpflug/report-viewer-default) repository, rename and change it.
@@ -60,14 +72,14 @@ See the [report-viewer-tester](https://github.com/paulpflug/report-viewer-tester
     moved the parser into the view
 
     is now able to spawn mocha on its own, allows restarts
- - *v0.2.0*: 
+ - *v0.2.0*:
     reworked the view
 
     using spec reporter now
 
     works with debug and console output directly into the browser window
  - *v0.1.1*: modified dependencies
- - *v0.1.0*: 
+ - *v0.1.0*:
    Moved the view into seperate bundle [report-viewer-default](https://github.com/paulpflug/report-viewer-default)
 
    Largely improved the view

@@ -1,3 +1,4 @@
+# out: ../lib/index.js
 "use strict"
 
 http = require "http"
@@ -14,10 +15,13 @@ module.exports = (program) ->
 
   # args processing
   port = program.port or 9999
-  throw new Error "no viewer given" if not program.viewer
-  throw new Error "no files to serve" if not program.viewer.files 
+  program.viewer ?= require("report-viewer-default")
+  throw new Error "no files to serve" if not program.viewer.files
   site = program.viewer
-
+  # options for client
+  addOptionsToClient = ->
+    site.files["options.js"] = "(function(){window.options={port:#{port}};}())"
+  addOptionsToClient()
   # http server
   server = http.createServer (request,response) ->
     filename = url.parse(request.url).pathname.slice(1) or "index.html"
@@ -35,19 +39,20 @@ module.exports = (program) ->
   # io server
   loaded = false
   io = socketio(server)
-  io.on "connection", (socket) -> 
+  io.on "connection", (socket) ->
     debug socket.id+" socket connected"
     socket.on "getConsole", () ->
-      debug socket.id+" sending console cache" 
+      debug socket.id+" sending console cache"
       socket.emit "getConsole", currentConsole
     socket.on "setConsole", (newConsole) ->
-      debug socket.id+" test ended. Updated console cache" 
+      debug socket.id+" test ended. Updated console cache"
       currentConsole = newConsole
     socket.on "loaded", ->
-      debug socket.id+" Website loaded successfully" 
+      debug socket.id+" Website loaded successfully"
       loaded = true
-      close() if ended 
+      close() if ended
     socket.on "restartable", ->
+      debug socket.id+" sending restartable: "+program.args.length > 0
       socket.emit "restartable", program.args.length > 0
     if program.args.length > 0
       debug socket.id+" client requests restart of child process"
@@ -67,7 +72,7 @@ module.exports = (program) ->
         cLine.text = line
         cLine.type = "normal"
         io.emit "consoleLine", cLine
-        currentConsole.push cLine 
+        currentConsole.push cLine
   # if input over stdin
   if program.args.length == 0
     process.stdin.on 'end', (chunk) ->
@@ -83,7 +88,7 @@ module.exports = (program) ->
       child.kill() if child
       sh = "sh"
       args = ["-c"]
-      if process.platform == "win32" 
+      if process.platform == "win32"
         sh = "cmd"
         args[0] = "/c"
       args = args.concat program.args
@@ -97,8 +102,8 @@ module.exports = (program) ->
       child.stderr.on "data", dataManager
 
     restart()
-  
-    
+
+
 
   # starting server
   console.log "serving on port "+port
@@ -116,9 +121,10 @@ module.exports = (program) ->
   # for developing own views
   if site.action
     site.action.on "reload", () ->
-      debug " View changed - reloading" 
+      addOptionsToClient()
+      debug " View changed - reloading"
       io.sockets.emit "reload"
-      
+
   # close
   close = () ->
     debug "exit process"
