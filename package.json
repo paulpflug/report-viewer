@@ -1,7 +1,7 @@
 {
   "name": "report-viewer",
   "description": "Cli for piping a unit test result directly into your browser",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "homepage": "https://github.com/paulpflug/report-viewer",
   "author": {
     "name": "Paul Pflugradt",
