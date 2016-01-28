@@ -23,7 +23,7 @@
     "commander": "^2.9.0",
     "socket.io": "^1.4.5",
     "xml2json": "^0.9.0",
-    "report-viewer-default": "^0.3.2",
+    "report-viewer-default": "^0.3.3",
     "opener": "^1.4.1"
   },
   "devDependencies": {
@@ -48,6 +48,7 @@
     "prebuild": "npm run clean",
     "build": "coffee --compile --output lib/ src/*.coffee",
     "watch2": "coffee --watch --output lib/ src/*.coffee",
-    "watch": "nodemon -q -w src/ --ext 'coffee' --exec 'npm run build'"
+    "watch": "nodemon -q -w src/ --ext 'coffee' --exec 'npm run build'",
+    "patch": "npm version patch;npm publish;git push;git push --tags"
   }
 }
