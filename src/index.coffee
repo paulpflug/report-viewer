@@ -57,7 +57,10 @@ module.exports = (program) ->
     if program.args.length > 0
       debug socket.id+" client requests restart of child process"
       if restart
-        socket.on "restart", restart
+        spec = socket.request._query["spec"];
+        restart(spec);
+        socket.on "restart",-> 
+          restart spec
 
   # input management
   ended = false
@@ -82,7 +85,7 @@ module.exports = (program) ->
     process.stdin.setEncoding("utf8")
     process.stdin.on "data", dataManager
   else # if input over own command
-    restart = () ->
+    restart = (spec) ->
       currentConsole = []
       io.emit "restart"
       child.kill() if child
@@ -92,6 +95,8 @@ module.exports = (program) ->
         sh = "cmd"
         args[0] = "/c"
       args = args.concat program.args
+      if spec
+        args[1] = args[1] + " " + spec
       child = spawn sh, args, {
         cwd: process.cwd(),
         env: process.env
@@ -101,7 +106,7 @@ module.exports = (program) ->
       child.stderr.setEncoding("utf8")
       child.stderr.on "data", dataManager
 
-    restart()
+    # restart()
 
 
 
