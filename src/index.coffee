@@ -93,7 +93,7 @@ module.exports = (program) ->
         args[0] = "/c"
       args = args.concat program.args
       child = spawn sh, args, {
-        cwd: process.cwd,
+        cwd: process.cwd(),
         env: process.env
       }
       child.stdout.setEncoding("utf8")
