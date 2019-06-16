@@ -58,9 +58,10 @@ module.exports = (program) ->
       debug socket.id+" client requests restart of child process"
       if restart
         spec = socket.request._query["spec"];
-        restart(spec);
+        project = socket.request._query["project"];
+        restart(spec, project);
         socket.on "restart",-> 
-          restart spec
+          restart spec, project
 
   # input management
   ended = false
@@ -85,7 +86,7 @@ module.exports = (program) ->
     process.stdin.setEncoding("utf8")
     process.stdin.on "data", dataManager
   else # if input over own command
-    restart = (spec) ->
+    restart = (spec, project) ->
       currentConsole = []
       io.emit "restart"
       child.kill() if child
@@ -97,8 +98,11 @@ module.exports = (program) ->
       args = args.concat program.args
       if spec
         args[1] = args[1] + " " + spec
+      cwd = process.cwd()
+      if project
+        cwd = project
       child = spawn sh, args, {
-        cwd: process.cwd(),
+        cwd: cwd,
         env: process.env
       }
       child.stdout.setEncoding("utf8")
@@ -116,9 +120,9 @@ module.exports = (program) ->
 
   # args execution
   if program.opener
-    debug "opening browser"
-    opener = require "opener"
-    opener("http://localhost:"+port)
+    # debug "opening browser"
+    # opener = require "opener"
+    # opener("http://localhost:"+port)
   else
     debug "issue reload to clients"
     io.sockets.emit "reload"
