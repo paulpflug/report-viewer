@@ -59,9 +59,10 @@ module.exports = (program) ->
       if restart
         spec = socket.request._query["spec"];
         project = socket.request._query["project"];
-        restart(spec, project);
+        context = socket.request._query["context"];
+        restart(spec, project, context);
         socket.on "restart",-> 
-          restart spec, project
+          restart spec, project, context
 
   # input management
   ended = false
@@ -86,7 +87,7 @@ module.exports = (program) ->
     process.stdin.setEncoding("utf8")
     process.stdin.on "data", dataManager
   else # if input over own command
-    restart = (spec, project) ->
+    restart = (spec, project, context) ->
       currentConsole = []
       io.emit "restart"
       child.kill() if child
@@ -101,9 +102,13 @@ module.exports = (program) ->
       cwd = process.cwd()
       if project
         cwd = project
+      child_env = JSON.stringify(process.env)
+      child_env = JSON.parse(child_env)
+      if context
+        child_env.mochacontext = context
       child = spawn sh, args, {
         cwd: cwd,
-        env: process.env
+        env: child_env
       }
       child.stdout.setEncoding("utf8")
       child.stdout.on "data", dataManager
