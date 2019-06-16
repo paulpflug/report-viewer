@@ -19,15 +19,14 @@
     "report-viewer": "./index.js"
   },
   "dependencies": {
-    "debug": "^2.2.0",
     "commander": "^2.9.0",
-    "socket.io": "^1.4.5",
-    "xml2json": "^0.9.0",
-    "report-viewer-default": "^0.3.3",
-    "opener": "^1.4.1"
+    "debug": "^2.2.0",
+    "opener": "^1.4.1",
+    "report-viewer-default": "file:report-viewer-default-0.3.3.tgz",
+    "socket.io": "^1.4.5"
   },
   "devDependencies": {
-    "coffee-script": "^1.10.0",
+    "coffeescript": "^1.10.0",
     "nodemon": "^1.8.1",
     "parallelshell": "^2.0.0",
     "rimraf": "^2.5.1"
